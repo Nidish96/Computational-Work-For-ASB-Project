@@ -121,7 +121,6 @@ for ci=1:length(Confs)
     
     fopts.Display = 'off';
     opt.Display = 'off';
-    keyboard
     for k=1:length(THETAS_SW)
         [PARS_SW(k, :), err] = fminunc(@(prs) SCALARIZE(@(pars) ...
                                                         WJMODEL_BBFUN(pars, ...
