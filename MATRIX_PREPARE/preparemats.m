@@ -149,7 +149,7 @@ disp(cnum)
 %% [Vrel, Drel] = eigs(Krel, Mrel, 30, 'SM');
 
 %% Save
-fname = sprintf('MAT_NULLRED_%s.mat', conf);
+fname = sprintf('MAT_NULLRED_C%s.mat', conf);
 save(fname, 'M', 'K', 'L', 'Fv', 'R', 'Th', 'LamT', 'MESH', ...
      'PatchAreas', 'Npatches', 'dofred', 'NTN', 'GTG', 'NTG', ...
      'cnum', 'Pels', 'Pnds')

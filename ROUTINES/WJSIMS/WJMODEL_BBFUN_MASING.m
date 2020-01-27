@@ -1,4 +1,9 @@
-function [ErrsWZD, dErrsdp, BB] = WJMODEL_BBFUN_MASING(pars, mdi, expdat, K, M, X0, Fv, L, Txyn, Qxyn, CFUN, DFUN, Npatches, opt)
+function [ErrsWZD, dErrsdp, BB] = WJMODEL_BBFUN_MASING(pars, mdi, ...
+                                                      expdat, K, M, ...
+                                                      X0, Fv, L, ...
+                                                      Txyn, Qxyn, ...
+                                                      CFUN, DFUN, ...
+                                                      Npatches, opt)
 %Inputs Notes:
 %If DFUN is not included as an input, it is assumed that CFUN is actually a
 %function for building CFUN/DFUN interpolation functions. 
@@ -10,12 +15,16 @@ function [ErrsWZD, dErrsdp, BB] = WJMODEL_BBFUN_MASING(pars, mdi, expdat, K, M, 
 
 
     % Prestress
-    [Xstat, eflg] = fsolve(@(X) WJRES_STR([X; 0.0], pars, K, Fv, Fv, L, Txyn, Qxyn, CFUN, Npatches), X0, opt);
-    [~,dRstat,~,dRdpstat] = WJRES_STR([Xstat; 0.0], pars, K, Fv, Fv, L, Txyn, Qxyn, CFUN, Npatches);
+    [Xstat, eflg] = fsolve(@(X) WJRES_STR([X; 0.0], pars, K, Fv, Fv, ...
+                                          L, Txyn, Qxyn, CFUN, Npatches), X0, opt);
+    [~,dRstat,~,dRdpstat] = WJRES_STR([Xstat; 0.0], pars, K, Fv, Fv, ...
+                                      L, Txyn, Qxyn, CFUN, Npatches);
     dXdpstat = -dRstat\dRdpstat;
-    [Dxynstat, dDxyndXstat, dDxyndpstat] = DFUN([Qxyn(1:3:end,:)*Xstat, Qxyn(2:3:end,:)*Xstat, Qxyn(3:3:end,:)*Xstat], pars);
+    [Dxynstat, dDxyndXstat, dDxyndpstat] = DFUN([Qxyn(1:3:end,:)*Xstat, ...
+                        Qxyn(2:3:end,:)*Xstat, Qxyn(3:3:end,:)*Xstat], pars); 
     Qsxyn = Qxyn;  Qsxyn(3:3:end, :) = 0;
-	prev.uxyn = [Qsxyn(1:3:end,:)*Xstat, Qsxyn(2:3:end,:)*Xstat, Qsxyn(3:3:end,:)*Xstat];
+	prev.uxyn = [Qsxyn(1:3:end,:)*Xstat, Qsxyn(2:3:end,:)*Xstat, ...
+                     Qsxyn(3:3:end,:)*Xstat];
     [prev.Fxyn, dFxynstat, prev.dFxyndpar] = CFUN(prev.uxyn, pars);
     prev.dFxyndXdpar = reshape(dFxynstat', Npatches*3, 1).*Qxyn*dXdpstat;
     prev.dDxyndX = dDxyndXstat;
@@ -50,10 +59,13 @@ function [ErrsWZD, dErrsdp, BB] = WJMODEL_BBFUN_MASING(pars, mdi, expdat, K, M, 
         X0 = [Xstat+Vm*BB.Q(i); Wm^2];
         Xd = fsolve(@(X) WJRES_RQNM([X; BB.Q(i)], pars, prev, K, M, Xstat, dXdpstat, ...
             Fv, L, Txyn, Qxyn, CFUN, Npatches), X0, opt);
-        [~, dRdX, ~, dRdp] = WJRES_RQNM([Xd; BB.Q(i)], pars, prev, K, M, Xstat, dXdpstat, Fv, ...
+        [~, dRdX, ~, dRdp] = WJRES_RQNM([Xd; BB.Q(i)], pars, prev, K, M, Xstat, dXdpstat, Fv, ... 
             L, Txyn, Qxyn, CFUN, Npatches);
         dXdp = -dRdX\dRdp;
-        [Dxyn, dDxyndX, dDxyndp] = DFUN([Qxyn(1:3:end,:)*Xd(1:end-1), Qxyn(2:3:end,:)*Xd(1:end-1), Qxyn(3:3:end,:)*Xd(1:end-1)]-prev.uxyn, pars);
+        [Dxyn, dDxyndX, dDxyndp] = DFUN([Qxyn(1:3:end,:)*Xd(1:end-1), ...
+                            Qxyn(2:3:end,:)*Xd(1:end-1), Qxyn(3:3: ...
+                                                          end,:)* ...
+                            Xd(1:end-1)]-prev.uxyn, pars);
         
         BB.W(i) = sqrt(Xd(end));
         BB.D(i) = sum(sum(Dxyn));
@@ -62,8 +74,9 @@ function [ErrsWZD, dErrsdp, BB] = WJMODEL_BBFUN_MASING(pars, mdi, expdat, K, M, 
         dWdp = dXdp(end,:)/(2*BB.W(i));
         
         % I do not know if this is correct:
-        dDdp = sum(sum(dDxyndp, 1), 3) + ... 
-            reshape(dDxyndX', Npatches*3, 1)'*(Qxyn*dXdp(1:end-1,:) - Qsxyn*prev.dXdp);
+        dDdp = sum(sum(dDxyndp, 1), 3) + reshape(dDxyndX', Npatches*3, ...
+                                                 1)'*(Qxyn*dXdp(1:end-1,:) ...
+                                                      - Qsxyn*prev.dXdp);
             
         %old version of dDdp
 %         dDdp = sum(sum(dDxyndp-dDxyndpstat, 1), 3) + ... 
@@ -84,7 +97,8 @@ function [ErrsWZD, dErrsdp, BB] = WJMODEL_BBFUN_MASING(pars, mdi, expdat, K, M, 
     %Error that is straight copied from WJMODEL_BBFUN
         if isreal(BB.W(i))
             ErrsWZD(1) = ErrsWZD(1) + ((BB.W(i)-expdat.W(i))/expdat.W(i))^2;
-            dErrsdp(1,:) = dErrsdp(1,:) + 2*((BB.W(i)-expdat.W(i))/expdat.W(i)^2)*dWdp;
+            dErrsdp(1,:) = dErrsdp(1,:) + 2*((BB.W(i)-expdat.W(i))/ ...
+                                             expdat.W(i)^2)*dWdp;
         else
             ErrsWZD(1) = ErrsWZD(1) + 1;
             dErrsdp(1,:) = dErrsdp(1,:) + 0;
@@ -98,8 +112,12 @@ function [ErrsWZD, dErrsdp, BB] = WJMODEL_BBFUN_MASING(pars, mdi, expdat, K, M, 
         if BB.Z(i)>0
             ErrsWZD(2) = ErrsWZD(2) + ((log(BB.Z(i))-log(expdat.Z(i)))/log(expdat.Z(i)))^2;
             ErrsWZD(3) = ErrsWZD(3) + ((log(BB.D(i))-log(expdat.D(i)))/log(expdat.D(i)))^2;
-            dErrsdp(2,:) = dErrsdp(2,:) + 2/BB.Z(i)*((log(BB.Z(i))-log(expdat.Z(i)))/log(expdat.Z(i))^2)*dZdp;
-            dErrsdp(3,:) = dErrsdp(3,:) + 2/BB.Z(i)*((log(BB.D(i))-log(expdat.D(i)))/log(expdat.D(i))^2)*dDdp;
+            dErrsdp(2,:) = dErrsdp(2,:) + 2/BB.Z(i)*((log(BB.Z(i))- ...
+                                                      log(expdat ...
+                                                          .Z(i)))/log(expdat.Z(i))^2)*dZdp;
+            dErrsdp(3,:) = dErrsdp(3,:) + 2/BB.Z(i)*((log(BB.D(i))- ...
+                                                      log(expdat ...
+                                                          .D(i)))/log(expdat.D(i))^2)*dDdp; 
         else
             ErrsWZD(2) = ErrsWZD(2) + 1;
             ErrsWZD(3) = ErrsWZD(3) + 1;
@@ -107,10 +125,8 @@ function [ErrsWZD, dErrsdp, BB] = WJMODEL_BBFUN_MASING(pars, mdi, expdat, K, M, 
             dErrsdp(3,:) = dErrsdp(3,:) + 0;
         end
     end
-    
     ErrsWZD = ErrsWZD/length(BB.Q);
     dErrsdp = dErrsdp/length(BB.Q);
-    
     
     ErrsWZD = ErrsWZD([1 2],:);
     dErrsdp = dErrsdp([1 2],:);
@@ -122,6 +138,4 @@ function [ErrsWZD, dErrsdp, BB] = WJMODEL_BBFUN_MASING(pars, mdi, expdat, K, M, 
     if ~isreal(ErrsWZD)
         disp('complex');
     end
-    
-    
 end
