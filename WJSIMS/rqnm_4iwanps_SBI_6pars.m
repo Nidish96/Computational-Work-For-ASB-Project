@@ -9,7 +9,7 @@ addpath('../ROUTINES/IWAN')
 conf = '1';
 Confs = {'1', '2', '3', '4', '4a', 'D1'};
 
-for ci=1:length(Confs)  % 3,4,6 not running
+for ci=1  % :length(Confs)  % 3,4,6 not running
     conf = Confs{ci};
     mfname = sprintf('../MATRIX_PREPARE/MAT_NULLRED_C%s.mat',conf);
     load(mfname, 'M', 'K', 'L', 'R', 'Fv', 'Th', 'LamT', 'cnum', ...
@@ -65,7 +65,7 @@ for ci=1:length(Confs)  % 3,4,6 not running
     %% Spherical Weighting
     opts = struct('method', 'sphericalbi', 'gradients', true, ...
                   'nobj', 2, 'npar', 2, 'nvar', size(copt.x.T{1},2));
-    opts.rpt = [Wmin; Zmin];
+    opts.rpt = [Wmin; Zmin]*0.9;
     opt = optimoptions('fsolve', 'Display', 'off', ...
                        'SpecifyObjectiveGradient', true);
     % opts.rpt = [0; 0];
@@ -118,7 +118,7 @@ for ci=1:length(Confs)  % 3,4,6 not running
     end
 
     save(sprintf('./DATS/ASB_C%s_4IWAN_PSSTIFF_BI_RES.mat', conf), 'PARS_BI', 'ERRS_BI', ...
-         'PARMIN_W', 'PARMIN_Z');
+        'THETAS_BI', 'PARMIN_W', 'PARMIN_Z');
 
     % figure(10)
     % % clf()
