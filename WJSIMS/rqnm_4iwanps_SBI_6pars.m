@@ -65,7 +65,7 @@ for ci=1:length(Confs)  % 3,4,6 not running
     %% Spherical Weighting
     opts = struct('method', 'sphericalbi', 'gradients', true, ...
                   'nobj', 2, 'npar', 2, 'nvar', size(copt.x.T{1},2));
-    opts.rpt = [Wmin; Zmin]-[Wmin; Zmin]*0.05;
+    opts.rpt = [Wmin; Zmin]-abs([Wmin; Zmin])*0.1;
     opt = optimoptions('fsolve', 'Display', 'off', ...
                        'SpecifyObjectiveGradient', true);
     % opts.rpt = [0; 0];
