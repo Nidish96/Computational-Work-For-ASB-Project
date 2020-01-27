@@ -125,6 +125,14 @@ for ci=1:length(Confs)  % 3,4,6 not running
     plot(ERRS_BI(:,1), ERRS_BI(:,2), '.-'); hold on
 end
 
+%% Evaluate
+ERRS_BI = zeros(size(PARS_BI,1),2);
+for k=1:size(PARS_BI,1)
+  ERRS_BI(k,:) = WJMODEL_BBFUN(PARS_BI(k,1:end-1), 1, expdat, K, M, ...
+                               X0, Fv*Prestress, L, Txyn, Qxyn, ...
+                               CFUN, Npatches, Nqp, opt);
+end
+
 %% Backbone function
 opt.Display = 'off';
 
