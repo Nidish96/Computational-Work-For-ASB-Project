@@ -117,7 +117,7 @@ for ci=1:length(Confs)  % 3,4,6 not running
         fprintf('Done %d/%d\n', k, length(THETAS_BI));
     end
 
-    save(sprintf('./DATS/ASB_C%s_4IWAN_PSSTIFF_BI_RES.mat', conf), 'PARS_BI', 'err', ...
+    save(sprintf('./DATS/ASB_C%s_4IWAN_PSSTIFF_BI_RES.mat', conf), 'PARS_BI', 'ERRS_BI', ...
          'PARMIN_W', 'PARMIN_Z');
 
     % figure(10)
