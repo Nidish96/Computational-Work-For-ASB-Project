@@ -9,7 +9,7 @@ addpath('../ROUTINES/IWAN')
 conf = '1';
 Confs = {'1', '2', '3', '4', '4a', 'D1'};
 
-for ci=1  % :length(Confs)  % 3,4,6 not running
+for ci=6:length(Confs)  % 3,4,6 not running
     conf = Confs{ci};
     mfname = sprintf('../MATRIX_PREPARE/MAT_NULLRED_C%s.mat',conf);
     load(mfname, 'M', 'K', 'L', 'R', 'Fv', 'Th', 'LamT', 'cnum', ...
@@ -123,6 +123,14 @@ for ci=1  % :length(Confs)  % 3,4,6 not running
     % figure(10)
     % % clf()
     plot(ERRS_BI(:,1), ERRS_BI(:,2), '.-'); hold on
+end
+
+%% Evaluate
+ERRS_BI = zeros(size(PARS_BI,1),2);
+for k=1:size(PARS_BI,1)
+  ERRS_BI(k,:) = WJMODEL_BBFUN(PARS_BI(k,1:end-1), 1, expdat, K, M, ...
+                               X0, Fv*Prestress, L, Txyn, Qxyn, ...
+                               CFUN, Npatches, Nqp, opt);
 end
 
 %% Backbone function
