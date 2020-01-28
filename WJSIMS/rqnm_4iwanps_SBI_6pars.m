@@ -9,7 +9,7 @@ addpath('../ROUTINES/IWAN')
 conf = '1';
 Confs = {'1', '2', '3', '4', '4a', 'D1'};
 
-for ci=1:length(Confs)  % 3,4,6 not running
+for ci=5:length(Confs)  % 3,4,6 not running
     conf = Confs{ci};
     mfname = sprintf('../MATRIX_PREPARE/MAT_NULLRED_C%s.mat',conf);
     load(mfname, 'M', 'K', 'L', 'R', 'Fv', 'Th', 'LamT', 'cnum', ...
