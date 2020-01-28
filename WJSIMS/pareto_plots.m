@@ -13,13 +13,17 @@ clf()
 
 for ci=1:length(Confs)
     conf = Confs{ci};
-    load(sprintf('./DATS/ASB_C%s_4IWAN_PSSTIFF_GA_RES.mat', conf), ...
-         'PARS_GA', 'ERRS_GA');
-    load(sprintf('./DATS/ASB_C%s_4IWAN_PSSTIFF_GA_RES.mat', conf), ...
-         'PARS_GA', 'ERRS_GA');    
-    
-    [~, si] = sort(ERRS_GA(:,1));
-    aa(ci) = plot(ERRS_GA(si,1), ERRS_GA(si,2), '.-'); hold on
+    try 
+        load(sprintf('./DATS/ASB_C%s_4IWAN_PSSTIFF_SBI_RES.mat', conf), ...
+             'PARS_BI', 'ERRS_BI');    
+        ERRS = ERRS_BI;
+    catch me
+        load(sprintf('./DATS/ASB_C%s_4IWAN_PSSTIFF_GA_RES.mat', conf), ...
+             'PARS_GA', 'ERRS_GA');
+        ERRS = ERRS_GA;
+    end
+    [~, si] = sort(ERRS(:,1));
+    aa(ci) = plot(ERRS(si,1)/2, ERRS(si,2)/2, '.-'); hold on
     legend(aa(ci), ['Configuration ' conf])
 end
 legend(aa(1:end))
