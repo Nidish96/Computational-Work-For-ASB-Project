@@ -43,7 +43,7 @@ function [varargout] = SCALARIZE(fun, X, varargin)
                 error('Unrecognized parameters');
             end            
             if ~isfield(opts, 'rpt')
-                error('Source point not given for spherical boundary intersection');
+                error('Source point not given for spherical weighting');
             end
             rhat = ones(opts.nobj,1);
             drhatdp = zeros(opts.nobj, opts.npar);

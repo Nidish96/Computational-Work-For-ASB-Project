@@ -152,9 +152,9 @@ function [s, dsdpar] = QEP_ROOTS(pars, K, C, M, mi, varargin)
       case {'sods', 'SODS'}
         s = [abs(s); angle(s)];
         dsdpar = [cos(s(2))*real(dsdpar) + sin(s(2))*imag(dsdpar);
-                  -sin(s(2))*(cos(s(2))*imag(dsdpar) - sin(s(2))* ...
+                  sin(s(2))*(cos(s(2))*imag(dsdpar) - sin(s(2))* ...
                               real(dsdpar))/s(1)];
-        s(2) = cos(s(2));
+        s(2) = -cos(s(2));
     end
     
     if isfield(opts, 'expdat')
@@ -170,7 +170,8 @@ function [s, dsdpar] = QEP_ROOTS(pars, K, C, M, mi, varargin)
             s = e.^2;
         end
     end
-
+    
+    
     dsdpar(opts.lspco, :) = dsdpar(opts.lspco, :)./s(opts.lspco, :)/log(10);
     s(opts.lspco) = log10(s(opts.lspco));
 end
